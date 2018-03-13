@@ -32,7 +32,17 @@ class ViewController: UIViewController {
         bottomRightButton.backgroundColor = .green
         
         // Adding Targets
-//        topLeftButton.addTarget(self, action: #selector(), for: .touchUpInside)
+        topLeftButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        topRightButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        bottomLeftButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        bottomRightButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        
+        // Add targets for exit
+        topLeftButton.addTarget(self, action: #selector(buttonExited(_:)), for: .touchDragExit)
+        topRightButton.addTarget(self, action: #selector(buttonExited(_:)), for: .touchDragExit)
+        bottomLeftButton.addTarget(self, action: #selector(buttonExited(_:)), for: .touchDragExit)
+        bottomRightButton.addTarget(self, action: #selector(buttonExited(_:)), for: .touchDragExit)
+        
         
         // Add the buttons as subviews of the ViewControllers vie
         view.addSubview(topLeftButton)
@@ -91,10 +101,42 @@ class ViewController: UIViewController {
         view.addConstraints([bottomRightTrailing, bottomRightBottom])
         
     }
-    
-    
+
     // 3) Adding targets (Actions) for the buttons
+    @objc func buttonTapped() {
+        // This replaces our action
+        
+        let topLeftColor = topLeftButton.backgroundColor
+        let topRightColor = topRightButton.backgroundColor
+        let bottomLeftColor = bottomLeftButton.backgroundColor
+        let bottomRightColor = bottomRightButton.backgroundColor
+        
+        //This changes our background color with a .5 escond fade animation
+        UIView.animate(withDuration: 0.5) {
+            self.topRightButton.backgroundColor = topLeftColor
+            self.bottomLeftButton.backgroundColor = topRightColor
+            self.bottomRightButton.backgroundColor = bottomLeftColor
+            self.topLeftButton.backgroundColor = bottomRightColor
+        }
+    }
+    
     // 4) Adding animation of the buttons
+    
+  @objc func buttonExited(_ sender: UIButton) {
+        view.bringSubview(toFront: sender)
+        let animation = CAKeyframeAnimation()
+        animation.keyPath = "position.y" // Theres more key paths to work with
+        animation.values = [ sender.frame.origin.y + sender.frame.height / 2,
+                             sender.frame.origin.y + sender.frame.height / 2 - 150,
+                             sender.frame.origin.y + sender.frame.height / 2,
+                             sender.frame.origin.y + sender.frame.height / 2 + 150,
+                             sender.frame.origin.y + sender.frame.height / 2]
+        
+        animation.keyTimes = [0, 0.25, 0.5, 0.75, 1]
+        animation.duration = 5
+        animation.repeatCount = 5
+        sender.layer.add(animation, forKey: "shake") // There are also more animations like Shake available
+    }
     
     
 
